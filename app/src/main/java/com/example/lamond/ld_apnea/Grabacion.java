@@ -409,19 +409,19 @@ public class Grabacion extends AppCompatActivity
                         sound.setText("" + amplitude);
 
                         x += 1;
-                        entries.add(new Entry(x, amplitude));
-                        LineDataSet dataSet = new LineDataSet(entries, "Label");
-                        dataSet.setColor(Color.BLACK);
-                        dataSet.setDrawFilled(true);
-                        //dataSet.addEntry(new Entry(x, amplitude));
-
-                        LineData lineData = new LineData(dataSet);
-
-                        lineData.notifyDataChanged();
-                        chart.notifyDataSetChanged();
-
-                        chart.setData(lineData);
-                        chart.invalidate();
+//                        entries.add(new Entry(x, amplitude));
+//                        LineDataSet dataSet = new LineDataSet(entries, "Label");
+//                        dataSet.setColor(Color.BLACK);
+//                        dataSet.setDrawFilled(true);
+//                        //dataSet.addEntry(new Entry(x, amplitude));
+//
+//                        LineData lineData = new LineData(dataSet);
+//
+//                        lineData.notifyDataChanged();
+//                        chart.notifyDataSetChanged();
+//
+//                        chart.setData(lineData);
+//                        chart.invalidate();
                         if(x == 20)
                         {
                             //chart.moveViewToX(20);
