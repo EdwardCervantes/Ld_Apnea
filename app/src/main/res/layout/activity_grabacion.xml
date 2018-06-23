@@ -27,60 +27,23 @@
             style="@style/style_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/buttonStop"
-            android:layout_alignStart="@+id/buttonStop"
-            android:layout_below="@+id/chart"
-            android:layout_marginTop="31dp"
-            android:minHeight="40dp"
-            android:minWidth="150dp"
-            android:text="Iniciar" />
-
-        <Button
-            android:id="@+id/buttonStop"
-            style="@style/style_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/buttonStart"
+            android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="10dp"
-            android:minWidth="150dp" android:minHeight="40dp"
-            android:text="Detener"/>
-
-        <Button
-            android:id="@+id/buttonPlayLastRecordAudio"
-            style="@style/style_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/buttonStop"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="10dp"
+            android:layout_marginBottom="148dp"
             android:minHeight="40dp"
             android:minWidth="150dp"
-            android:text="Reproducir" />
-
-        <Button
-            android:id="@+id/buttonStopPlayingRecording"
-            style="@style/style_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/buttonPlayLastRecordAudio"
-            android:layout_alignStart="@+id/buttonPlayLastRecordAudio"
-            android:layout_below="@+id/buttonPlayLastRecordAudio"
-            android:layout_marginTop="15dp"
-            android:minHeight="40dp"
-            android:minWidth="150dp"
-            android:text="Detener Reprod" />
+            android:onClick="IniciarDetener"
+            android:text="@string/iniciar_grabacion" />
 
         <TextView
             android:id="@+id/decibel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignEnd="@+id/buttonStart"
-            android:layout_alignLeft="@+id/buttonStart"
-            android:layout_alignRight="@+id/buttonStart"
-            android:layout_alignStart="@+id/buttonStart"
-            android:layout_below="@+id/chart"
-            android:text="0" />
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="196dp"
+            android:text="0"
+            android:textSize="24sp" />
 
     </RelativeLayout>
 </android.support.constraint.ConstraintLayout>
