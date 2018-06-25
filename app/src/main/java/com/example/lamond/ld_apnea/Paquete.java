@@ -6,7 +6,7 @@ import java.util.Date;
 import java.util.concurrent.Semaphore;
 
 public class Paquete {
-    private final static int tamPaquete = 10;
+    public final static int tamPaquete = 10;
     private int data[];
     private boolean lleno = false;
     private int index = 0;
@@ -31,6 +31,7 @@ public class Paquete {
             }
         }
         catch (InterruptedException ex){
+            mutex.release();
             ex.printStackTrace();
         }
     }
@@ -47,6 +48,7 @@ public class Paquete {
             mutex.release();
         }
         catch (InterruptedException ex){
+            mutex.release();
             ex.printStackTrace();
         }
     }
@@ -63,5 +65,40 @@ public class Paquete {
         }
         json += "]}";
         return json;
+    }
+
+    public void setData(int i, int value){
+        data[index] = value;
+    }
+
+    public void llenar(){
+        try {
+            mutex.acquire();
+            lleno = true;
+            index = tamPaquete;
+            mutex.release();
+        }
+        catch (InterruptedException ex){
+            mutex.release();
+            ex.printStackTrace();
+        }
+    }
+
+    public void copy(Paquete p){
+        for (int i=0; i < tamPaquete; i++){
+            p.setData(i, this.data[i]);
+            this.data[i] = 0;
+        }
+        p.llenar();
+        try {
+            mutex.acquire();
+            this.index = 0;
+            this.lleno = false;
+            mutex.release();
+        }
+        catch (InterruptedException ex){
+            mutex.release();
+            ex.printStackTrace();
+        }
     }
 }
