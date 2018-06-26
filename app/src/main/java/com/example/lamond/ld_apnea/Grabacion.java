@@ -6,6 +6,7 @@ import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
+import android.os.AsyncTask;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -18,7 +19,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -70,7 +78,7 @@ public class Grabacion extends AppCompatActivity
     }
 
     public void startRecord(View view){
-        try {
+        /*try {
             prepareNewAudio();
             myAudioRecorder.prepare();
             myAudioRecorder.start();
@@ -82,7 +90,10 @@ public class Grabacion extends AppCompatActivity
         record.setEnabled(false);
         stop.setEnabled(true);
         Toast.makeText(getApplicationContext(), "Empezo Grabacion", Toast.LENGTH_SHORT).show();
-        escuchado = true;
+        escuchado = true;*/
+
+        new MakeNetworkCall().execute("http://192.168.0.11/test.php","Post");
+
     }
 
     public void stopRecord(View view){
@@ -113,6 +124,7 @@ public class Grabacion extends AppCompatActivity
                     sound.setText(amplitudeTxt);
                     if (!paquete.estaLleno())
                         paquete.add(amplitude);
+                    //Thread.sleep(10);
                 }
             }
         });
@@ -140,5 +152,102 @@ public class Grabacion extends AppCompatActivity
         }
     }
 
+    InputStream ByPostMethod(String ServerURL) {
+
+        InputStream DataInputStream = null;
+        try {
+            String PostParam = "username=jorge369";
+
+            URL url = new URL(ServerURL);
+            HttpURLConnection cc = (HttpURLConnection) url.openConnection();
+
+            cc.setReadTimeout(5000);
+            cc.setConnectTimeout(5000);
+            cc.setRequestMethod("POST");
+            cc.setDoInput(true);
+
+            cc.connect();
+            //Writing data (bytes) to the data output stream
+            DataOutputStream dos = new DataOutputStream(cc.getOutputStream());
+            dos.writeBytes(PostParam);
+            //flushes data output stream.
+            dos.flush();
+            dos.close();
+
+            //Getting HTTP response code
+            int response = cc.getResponseCode();
+
+            //if response code is 200 / OK then read Inputstream
+            //HttpURLConnection.HTTP_OK is equal to 200
+            if(response == HttpURLConnection.HTTP_OK) {
+                DataInputStream = cc.getInputStream();
+                Log.i("coneccion","exitosaaaaa");
+            }
+
+        } catch (Exception e) {
+            Log.e("errorrr", "Error in GetData", e);
+        }
+        return DataInputStream;
+    }
+
+    String ConvertStreamToString(InputStream stream) {
+
+        InputStreamReader isr = new InputStreamReader(stream);
+        BufferedReader reader = new BufferedReader(isr);
+        StringBuilder response = new StringBuilder();
+
+        String line = null;
+        try {
+            while ((line = reader.readLine()) != null) {
+                response.append(line);
+            }
+        } catch (IOException e) {
+            Log.e("error", "Error in ConvertStreamToString", e);
+        } catch (Exception e) {
+            Log.e("error", "Error in ConvertStreamToString", e);
+        } finally {
+            try {
+                stream.close();
+            } catch (IOException e) {
+                Log.e("error", "Error in ConvertStreamToString", e);
+            } catch (Exception e) {
+                Log.e("error", "Error in ConvertStreamToString", e);
+            }
+        }
+        return response.toString();
+    }
+
+
+
+    private class MakeNetworkCall extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(String... arg) {
+
+            InputStream is = null;
+            String URL = arg[0];
+            String res = "";
+
+            is = ByPostMethod(URL);
+
+            if (is != null) {
+                res = ConvertStreamToString(is);
+            } else {
+                res = "Something went wrong";
+            }
+            Log.i("datos devueltos",res);
+            return res;
+        }
+
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            Log.i("postexecute", "Result: " + result);
+        }
+    }
 
 }
