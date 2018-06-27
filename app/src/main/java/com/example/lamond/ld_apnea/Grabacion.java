@@ -19,6 +19,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -28,7 +30,9 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -47,6 +51,8 @@ public class Grabacion extends AppCompatActivity
     private Boolean escuchado;
     private Timer producerTask, consumerTask;
     private Paquete paquete, paqueteAux;
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd");
+    private SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm:ss");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,7 +98,7 @@ public class Grabacion extends AppCompatActivity
         Toast.makeText(getApplicationContext(), "Empezo Grabacion", Toast.LENGTH_SHORT).show();
         escuchado = true;*/
 
-        new MakeNetworkCall().execute("http://192.168.0.11/test.php","Post");
+        new MakeNetworkCall().execute("http://moviles.tueduca.online/api/rest_datos/getall.json");
 
     }
 
@@ -156,8 +162,13 @@ public class Grabacion extends AppCompatActivity
 
         InputStream DataInputStream = null;
         try {
-            String PostParam = "username=jorge369";
-
+            Date dNow = new Date( );
+            JSONObject PostParam = new JSONObject();
+            PostParam.put("hora",timeFormat.format(dNow));
+            PostParam.put("fecha",dateFormat.format(dNow));
+            PostParam.put("data","12,34,56,98");
+            Log.i("envio",PostParam.toString());
+            //String PostParam = "";
             URL url = new URL(ServerURL);
             HttpURLConnection cc = (HttpURLConnection) url.openConnection();
 
@@ -169,7 +180,7 @@ public class Grabacion extends AppCompatActivity
             cc.connect();
             //Writing data (bytes) to the data output stream
             DataOutputStream dos = new DataOutputStream(cc.getOutputStream());
-            dos.writeBytes(PostParam);
+            dos.writeBytes(PostParam.toString());
             //flushes data output stream.
             dos.flush();
             dos.close();
@@ -179,6 +190,7 @@ public class Grabacion extends AppCompatActivity
 
             //if response code is 200 / OK then read Inputstream
             //HttpURLConnection.HTTP_OK is equal to 200
+            //Log.i("llego","exitosaaaaa");
             if(response == HttpURLConnection.HTTP_OK) {
                 DataInputStream = cc.getInputStream();
                 Log.i("coneccion","exitosaaaaa");
