@@ -31,17 +31,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import javax.net.ssl.HttpsURLConnection;
-
-import static android.Manifest.permission.RECORD_AUDIO;
-import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
-import static com.example.lamond.ld_apnea.MainActivity.RequestPermissionCode;
 
 public class Grabacion extends AppCompatActivity
 {
@@ -50,9 +41,7 @@ public class Grabacion extends AppCompatActivity
     private String outputFile;
     private Boolean escuchado;
     private Timer producerTask, consumerTask;
-    private Paquete paquete, paqueteAux;
-    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd");
-    private SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm:ss");
+    private Paquete paquete;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +54,6 @@ public class Grabacion extends AppCompatActivity
         outputFile = Environment.getExternalStorageDirectory().getAbsolutePath() + "/recording.3gp";
         escuchado = false;
         paquete = new Paquete();
-        paqueteAux = new Paquete();
 
         producerTask = new Timer();
         producerTask.scheduleAtFixedRate(new Producer(), 0, 500);
@@ -84,22 +72,20 @@ public class Grabacion extends AppCompatActivity
     }
 
     public void startRecord(View view){
-        /*try {
+        paquete.setNewId();
+        try {
             prepareNewAudio();
             myAudioRecorder.prepare();
             myAudioRecorder.start();
         } catch (IllegalStateException ise) {
-            // make something ...
+            Log.e("IllegalStateException","preparar y comenzar audio");
         } catch (IOException ioe) {
-            // make something
+            Log.e("IOException","preparar y comenzar audio");
         }
         record.setEnabled(false);
         stop.setEnabled(true);
         Toast.makeText(getApplicationContext(), "Empezo Grabacion", Toast.LENGTH_SHORT).show();
-        escuchado = true;*/
-
-        new MakeNetworkCall().execute("http://moviles.tueduca.online/api/rest_datos/getall.json");
-
+        escuchado = true;
     }
 
     public void stopRecord(View view){
@@ -110,6 +96,7 @@ public class Grabacion extends AppCompatActivity
         record.setEnabled(true);
         stop.setEnabled(false);
         Toast.makeText(getApplicationContext(), "Termino Grabacion", Toast.LENGTH_SHORT).show();
+        paquete.llenar();
     }
 
     private class Producer extends TimerTask
@@ -126,11 +113,10 @@ public class Grabacion extends AppCompatActivity
                 {
                     int amplitude = myAudioRecorder.getMaxAmplitude();
                     String amplitudeTxt = String.valueOf(amplitude);
-                    //double amplitudeDb = 20 * Math.log10((double) Math.abs(amplitude));
+
                     sound.setText(amplitudeTxt);
                     if (!paquete.estaLleno())
                         paquete.add(amplitude);
-                    //Thread.sleep(10);
                 }
             }
         });
@@ -146,29 +132,22 @@ public class Grabacion extends AppCompatActivity
             public void run()
             {
                 if (paquete.estaLleno()){
-                    //copias la data de paquete a paquete auxiliar
-                    paquete.copy(paqueteAux);
-                    //trabajamos sobre paquete auxiliar
-
+                    //obtenemos la data a enviar
+                    String dataToSend = paquete.getJson();
+                    paquete.vaciar();
+                    Log.i("data a enviar",dataToSend);
                     //emviamos los datos
-
+                    new MakeNetworkCall().execute("http://moviles.tueduca.online/api/rest_datos/getall.json",dataToSend);
                 }
             }
         });
         }
     }
 
-    InputStream ByPostMethod(String ServerURL) {
+    InputStream ByPostMethod(String ServerURL, String dataJson) {
 
         InputStream DataInputStream = null;
         try {
-            Date dNow = new Date( );
-            JSONObject PostParam = new JSONObject();
-            PostParam.put("hora",timeFormat.format(dNow));
-            PostParam.put("fecha",dateFormat.format(dNow));
-            PostParam.put("data","12,34,56,98");
-            Log.i("envio",PostParam.toString());
-            //String PostParam = "";
             URL url = new URL(ServerURL);
             HttpURLConnection cc = (HttpURLConnection) url.openConnection();
 
@@ -180,7 +159,7 @@ public class Grabacion extends AppCompatActivity
             cc.connect();
             //Writing data (bytes) to the data output stream
             DataOutputStream dos = new DataOutputStream(cc.getOutputStream());
-            dos.writeBytes(PostParam.toString());
+            dos.writeBytes(dataJson);
             //flushes data output stream.
             dos.flush();
             dos.close();
@@ -188,9 +167,6 @@ public class Grabacion extends AppCompatActivity
             //Getting HTTP response code
             int response = cc.getResponseCode();
 
-            //if response code is 200 / OK then read Inputstream
-            //HttpURLConnection.HTTP_OK is equal to 200
-            //Log.i("llego","exitosaaaaa");
             if(response == HttpURLConnection.HTTP_OK) {
                 DataInputStream = cc.getInputStream();
                 Log.i("coneccion","exitosaaaaa");
@@ -214,16 +190,16 @@ public class Grabacion extends AppCompatActivity
                 response.append(line);
             }
         } catch (IOException e) {
-            Log.e("error", "Error in ConvertStreamToString", e);
+            Log.e("IOException", "Error in ConvertStreamToString", e);
         } catch (Exception e) {
-            Log.e("error", "Error in ConvertStreamToString", e);
+            Log.e("Exception", "Error in ConvertStreamToString", e);
         } finally {
             try {
                 stream.close();
             } catch (IOException e) {
-                Log.e("error", "Error in ConvertStreamToString", e);
+                Log.e("IOException", "Error in Close stream", e);
             } catch (Exception e) {
-                Log.e("error", "Error in ConvertStreamToString", e);
+                Log.e("Exception", "Error in Close stream", e);
             }
         }
         return response.toString();
@@ -243,16 +219,16 @@ public class Grabacion extends AppCompatActivity
 
             InputStream is = null;
             String URL = arg[0];
+            String dataToSend = arg[1];
             String res = "";
 
-            is = ByPostMethod(URL);
+            is = ByPostMethod(URL, dataToSend);
 
             if (is != null) {
                 res = ConvertStreamToString(is);
             } else {
                 res = "Something went wrong";
             }
-            Log.i("datos devueltos",res);
             return res;
         }
 

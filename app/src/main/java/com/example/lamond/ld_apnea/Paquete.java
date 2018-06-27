@@ -1,21 +1,33 @@
 package com.example.lamond.ld_apnea;
 
+import android.util.Log;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.Random;
 import java.util.concurrent.Semaphore;
 
 public class Paquete {
-    public final static int tamPaquete = 10;
+    private final static int tamPaquete = 500;
     private int data[];
     private boolean lleno = false;
     private int index = 0;
-    private final static DateFormat hourFormat = new SimpleDateFormat("HH:mm:ss");
-    private final static DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-    static Semaphore mutex = new Semaphore(1);
+    private int id = 0;
+    private Random random;
+    private final static DateFormat hourFormat = new SimpleDateFormat("hh:mm:ss");
+    private final static DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd");
+    private static Semaphore mutex = new Semaphore(1);
 
     public Paquete() {
         data = new int[tamPaquete];
+        for (int i=0; i<tamPaquete;i++)
+            data[i]=-1;
+        random = new Random();
     }
 
     public void add(int item){
@@ -42,6 +54,8 @@ public class Paquete {
 
     public void vaciar(){
         index = 0;
+        for (int i=0; i<tamPaquete; i++)
+            data[i] = -1;
         try {
             mutex.acquire();
             lleno = false;
@@ -55,16 +69,21 @@ public class Paquete {
 
     public String getJson(){
         Date date = new Date();
+        JSONObject PostParam = new JSONObject();
+        String dataArray = Arrays.toString(data);
+        dataArray = dataArray.substring(1,dataArray.length()-1);
 
-        String json = "{";
-        json += "\"hora\":\"" + hourFormat.format(date) + "\",";
-        json += "\"fecha\":\"" + dateFormat.format(date) + "\",";
-        json += "\"data\":[" + Integer.toString(data[0]);
-        for (int i=1; i<tamPaquete; i++){
-            json += "," + Integer.toString(data[i]);
+        try {
+            PostParam.put("id",id);
+            PostParam.put("hora",hourFormat.format(date));
+            PostParam.put("fecha",dateFormat.format(date));
+            PostParam.put("data",dataArray);
         }
-        json += "]}";
-        return json;
+        catch(JSONException e){
+            Log.e("JsonExcepcion","error al crear json format");
+        }
+
+        return PostParam.toString();
     }
 
     public void setData(int i, int value){
@@ -100,5 +119,9 @@ public class Paquete {
             mutex.release();
             ex.printStackTrace();
         }
+    }
+
+    public void setNewId(){
+        id = random.nextInt(10000)+1;
     }
 }
