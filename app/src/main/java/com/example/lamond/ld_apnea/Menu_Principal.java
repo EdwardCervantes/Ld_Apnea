@@ -41,6 +41,8 @@ public class Menu_Principal extends AppCompatActivity
         public void onClick(View arg0)
         {
             //Toast.makeText(getApplicationContext(), "Error", Toast.LENGTH_LONG).show();
+            Intent intent  = new Intent(Menu_Principal.this ,Historial.class);
+            startActivity(intent);
         }
     };
     View.OnClickListener DiagnosticoOnClickListener = new View.OnClickListener()

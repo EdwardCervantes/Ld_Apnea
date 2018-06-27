@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical">
+    <LinearLayout
+        android:id="@+id/lin_all"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:orientation="vertical" >
+        <GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:alignmentMode="alignBounds"
+            android:columnCount="1"
+            android:rowCount="9">
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_column="0"
+                android:layout_gravity="center"
+                android:layout_row="0"
+                android:text="Fecha desde:"
+                android:textColor="#ff9933"
+                android:textStyle="bold" />
+            <EditText
+                android:id="@+id/etFechaDesde"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:ems="10"
+                android:inputType="date"
+                tools:layout_editor_absoluteX="56dp"
+                tools:layout_editor_absoluteY="65dp" />
+
+            <TextView
+                android:id="@+id/textView4"
+                android:layout_column="0"
+                android:layout_gravity="center"
+                android:layout_row="3"
+                android:text="Fecha hasta:"
+                android:textColor="#ff9933"
+                android:textStyle="bold" />
+            <EditText
+                android:id="@+id/etFechaHasta"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:ems="10"
+                android:inputType="date"
+                tools:layout_editor_absoluteX="56dp"
+                tools:layout_editor_absoluteY="65dp" />
+
+            <Button
+                android:id="@+id/btnBuscar"
+                style="@style/style_button"
+                android:layout_column="0"
+                android:layout_gravity="center"
+                android:layout_row="5"
+                android:minHeight="40dp"
+                android:minWidth="150dp"
+                android:text="Buscar" />
+
+            <Spinner
+                android:id="@+id/sIds"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_row="6"
+                android:layout_marginTop="20dp"/>
+
+            <com.github.mikephil.charting.charts.LineChart
+                android:id="@+id/chartHistorial"
+                android:layout_width="330dp"
+                android:layout_height="250dp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="20dp" />
+        </GridLayout>
+    </LinearLayout>
+
+</RelativeLayout>
+

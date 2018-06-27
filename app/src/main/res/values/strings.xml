@@ -3,4 +3,5 @@
     <string name="my_text"><u>Nuevo Usuario</u>.</string>
     <string name="iniciar_grabacion">Iniciar</string>
     <string name="detener_grabacion">Detener</string>
+    <string name="myTableRowClick">myTableRowClickHandler</string>
 </resources>
