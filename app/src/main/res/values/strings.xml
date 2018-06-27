@@ -4,4 +4,6 @@
     <string name="iniciar_grabacion">Iniciar</string>
     <string name="detener_grabacion">Detener</string>
     <string name="myTableRowClick">myTableRowClickHandler</string>
+    <string name="imagen_descripcion">imagen</string>
+    <string name="zero">0</string>
 </resources>
