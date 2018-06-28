@@ -150,7 +150,7 @@ public class Grabacion extends AppCompatActivity
         try {
             URL url = new URL(ServerURL);
             HttpURLConnection cc = (HttpURLConnection) url.openConnection();
-
+            cc.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
             cc.setReadTimeout(5000);
             cc.setConnectTimeout(5000);
             cc.setRequestMethod("POST");
@@ -158,11 +158,19 @@ public class Grabacion extends AppCompatActivity
 
             cc.connect();
             //Writing data (bytes) to the data output stream
-            DataOutputStream dos = new DataOutputStream(cc.getOutputStream());
-            dos.writeBytes(dataJson);
+            //DataOutputStream dos = new DataOutputStream(cc.getOutputStream());
+            //dos.writeBytes(dataJson);
+
+            java.io.OutputStreamWriter ap_osw= new java.io.OutputStreamWriter(cc.getOutputStream());
+                ap_osw.write(dataJson);
+                ap_osw.flush();
+                ap_osw.close();
+
+
+
             //flushes data output stream.
-            dos.flush();
-            dos.close();
+            //dos.flush();
+            //dos.close();
 
             //Getting HTTP response code
             int response = cc.getResponseCode();
@@ -221,7 +229,7 @@ public class Grabacion extends AppCompatActivity
             String URL = arg[0];
             String dataToSend = arg[1];
             String res = "";
-
+            Log.i("datos para: ",dataToSend);
             is = ByPostMethod(URL, dataToSend);
 
             if (is != null) {

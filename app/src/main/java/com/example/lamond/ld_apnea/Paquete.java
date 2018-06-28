@@ -13,7 +13,7 @@ import java.util.Random;
 import java.util.concurrent.Semaphore;
 
 public class Paquete {
-    private final static int tamPaquete = 500;
+    private final static int tamPaquete = 10;
     private int data[];
     private boolean lleno = false;
     private int index = 0;
@@ -74,9 +74,10 @@ public class Paquete {
         dataArray = dataArray.substring(1,dataArray.length()-1);
 
         try {
-            PostParam.put("id",id);
+            PostParam.put("id",String.valueOf(id));
             PostParam.put("hora",hourFormat.format(date));
-            PostParam.put("fecha",dateFormat.format(date));
+            //PostParam.put("fecha",dateFormat.format(date));
+            PostParam.put("fecha","2018-06-20");
             PostParam.put("data",dataArray);
         }
         catch(JSONException e){
